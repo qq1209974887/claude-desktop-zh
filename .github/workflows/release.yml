@@ -24,15 +24,22 @@ jobs:
           # 创建发布目录
           mkdir -p release
           mkdir -p release/logs
-          
-          # 复制所有平台的产物
-          find artifacts/ -type d -name "claude-zh-patch*" -exec cp -r {} release/ \; 2>/dev/null || true
-          
+
+          # 每个构建产物目录下都有完整的 dist/（可执行文件 + 使用说明.md + src/ + resources/）
+          for dir in artifacts/*/; do
+            if [ -d "$dir/dist" ]; then
+              name=$(basename "$dir")
+              mkdir -p "release/$name"
+              cp -r "$dir"/dist/* "release/$name/"
+            fi
+          done
+
           # 复制所有构建日志到日志目录
           cp artifacts/*/build.log release/logs/ 2>/dev/null || true
-          
+
           # 列出产物
           ls -la release/
+          ls -la release/logs/ 2>/dev/null || true
 
       - name: 创建 GitHub Release
         uses: softprops/action-gh-release@v2
