@@ -98,7 +98,12 @@ jobs:
           # 5. 可执行文件 smoke test：运行 --help
           echo ""
           echo "=== 运行 --help ==="
-          OUTPUT=$(timeout 30 "$BIN" --help 2>&1) || true
+          # macOS 默认无 timeout 命令，--help 本身会立即退出，无需超时保护
+          if command -v timeout &>/dev/null; then
+            OUTPUT=$(timeout 30 "$BIN" --help 2>&1) || true
+          else
+            OUTPUT=$("$BIN" --help 2>&1) || true
+          fi
           if echo "$OUTPUT" | grep -qi "usage\|用法\|usage"; then
             echo "[PASS] --help 正常输出"
           else
