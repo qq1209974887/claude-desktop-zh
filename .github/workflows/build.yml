@@ -39,6 +39,7 @@ jobs:
           pip install pyinstaller questionary
 
       - name: 编译 ${{ matrix.platform }}
+        shell: bash
         run: |
           # 日志写到 build/（已提交的目录），dist/ 在全新 Runner 上不存在
           python build/build_exes.py ${{ matrix.platform }} 2>&1 | tee build/build.log
