@@ -1,0 +1,47 @@
+# .github/workflows/release.yml
+name: Release
+
+on:
+  workflow_run:
+    workflows: [Build]
+    types: [completed]
+    if: github.event.workflow_run.conclusion == 'success'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: 下载所有平台构建产物
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+
+      - name: 整理产物并创建发布
+        run: |
+          # 创建发布目录
+          mkdir -p release
+          mkdir -p release/logs
+          
+          # 复制所有平台的产物
+          find artifacts/ -type d -name "claude-zh-patch*" -exec cp -r {} release/ \; 2>/dev/null || true
+          
+          # 复制所有构建日志到日志目录
+          cp artifacts/*/build.log release/logs/ 2>/dev/null || true
+          
+          # 列出产物
+          ls -la release/
+
+      - name: 创建 GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release/**/claude-zh-patch.exe
+            release/**/claude-zh-patch
+            release/logs/*.log
+          generate_release_notes: true
+          draft: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

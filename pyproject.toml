@@ -1,0 +1,64 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "claude-desktop-zh"
+version = "1.0.0"
+authors = [
+  { name = "", email = "" }
+]
+description = "Claude-Desktop 中文汉化补丁程序 - 让 en-US 槽位装载中文，无需修改应用代码"
+readme = "DESCRIPTION.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.7"
+keywords = ["claude", "claude-desktop", "chinese", "localization", "translation", "汉化"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: End Users/Desktop",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: MacOS",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Localization",
+  "Topic :: Text Processing :: Linguistic"
+]
+urls = { homepage = "https://github.com/B0BOWANG/claude-destktop-zh", repository = "https://github.com/B0BOWANG/claude-destktop-zh" }
+
+[project.scripts]
+claude-zh-patch = "src.install:main"
+
+[project.dependencies]
+questionary = ">=2.0"
+
+[project.optional-dependencies]
+build = [
+  "pyinstaller>=5.0"
+]
+
+[tool.setuptools]
+package-dir = { "" = "." }
+include-package-data = true
+
+[tool.setuptools.data-files]
+"share/claude-zh-patch/resources" = [
+  "resources/zh-CN.json",
+  "resources/ion-dist/i18n/zh-CN.json",
+  "resources/ion-dist/i18n/dynamic/zh-CN.json"
+]
+"share/claude-zh-patch/scripts" = [
+  "src/install.ps1",
+  "src/install.sh"
+]
+"share/claude-zh-patch/build" = [
+  "build/build_exes.py",
+  "build/build.sh",
+  "build/run_build.ps1"
+]
