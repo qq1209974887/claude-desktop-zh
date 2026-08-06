@@ -14,6 +14,19 @@ import sys
 from pathlib import Path
 
 
+def _force_utf8_stdio():
+    """强制 stdout/stderr 使用 UTF-8 编码，避免 Windows 上管道输出中文时报 UnicodeEncodeError"""
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        # 旧版本 Python 没有 reconfigure，忽略即可
+        pass
+
+
+_force_utf8_stdio()
+
+
 def run_command(cmd, cwd=None):
     """运行命令并打印输出"""
     print(f"$ {' '.join(str(x) for x in cmd)}")
