@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "claude-desktop-zh"
 version = "1.0.0"
 authors = [
-  { name = "", email = "" }
+  { name = "qq1209974887", email = "129974887@outlook.com" }
 ]
 description = "Claude-Desktop 中文汉化补丁程序 - 让 en-US 槽位装载中文，无需修改应用代码"
 readme = "DESCRIPTION.md"
@@ -30,7 +30,7 @@ classifiers = [
   "Topic :: Localization",
   "Topic :: Text Processing :: Linguistic"
 ]
-urls = { homepage = "https://github.com/B0BOWANG/claude-destktop-zh", repository = "https://github.com/B0BOWANG/claude-destktop-zh" }
+urls = { homepage = "https://github.com/qq1209974887/claude-desktop-zh", repository = "https://github.com/B0BOWANG/claude-destktop-zh" }
 
 [project.scripts]
 claude-zh-patch = "src.install:main"
