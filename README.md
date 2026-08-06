@@ -62,7 +62,7 @@ python install.py --h
 
 ```bash
 # 自动尝试为所有平台构建，环境不匹配的将自动跳过
-python build/build_exes.py
+python scripts/build_exes.py
 ```
 
 脚本会依次检测 Windows、macOS、Linux 三个平台的构建环境，对匹配的平台执行编译，不匹配的则跳过并在最后输出汇总报告。
@@ -75,11 +75,11 @@ python build/build_exes.py
 
 ```bash
 # 方式一：使用 Python 构建脚本
-python build/build_exes.py windows
+python scripts/build_exes.py windows
 
 # 方式二：直接使用 PyInstaller
 python -m PyInstaller --clean --onefile --name claude-zh-patch ^
-    --workpath build\build_temp --distpath dist --console ^
+    --workpath scripts\build_temp --distpath dist --console ^
     --add-data "resources;resources" ^
     --hidden-import json --hidden-import questionary ^
     src\install.py
@@ -89,11 +89,11 @@ python -m PyInstaller --clean --onefile --name claude-zh-patch ^
 
 ```bash
 # 方式一：使用 Python 构建脚本
-python build/build_exes.py macos
+python scripts/build_exes.py macos
 
 # 方式二：直接使用 PyInstaller
 python3 -m PyInstaller --clean --onefile --name claude-zh-patch \
-    --workpath build/build_temp --distpath dist --console \
+    --workpath scripts/build_temp --distpath dist --console \
     --add-data "resources:resources" \
     --hidden-import json --hidden-import questionary \
     src/install.py
@@ -103,15 +103,15 @@ python3 -m PyInstaller --clean --onefile --name claude-zh-patch \
 
 ```bash
 # 方式一：使用 Python 构建脚本
-python build/build_exes.py linux
+python scripts/build_exes.py linux
 
 # 方式二：使用 Bash 构建脚本
-chmod +x build/build.sh
-./build/build.sh
+chmod +x scripts/build.sh
+./scripts/build.sh
 
 # 方式三：直接使用 PyInstaller
 python3 -m PyInstaller --clean --onefile --name claude-zh-patch \
-    --workpath build/build_temp --distpath dist --console \
+    --workpath scripts/build_temp --distpath dist --console \
     --add-data "resources:resources" \
     --hidden-import json --hidden-import questionary \
     src/install.py
@@ -132,7 +132,7 @@ dist/
 └── build.log                     # 构建日志文件
 ```
 
-构建完成后会自动清理中间产物（`build/build_temp/`、`*.spec` 文件）。
+构建完成后会自动清理中间产物（`scripts/build_temp/`、`*.spec` 文件）。
 
 ### GitHub Actions 自动构建
 
@@ -181,9 +181,10 @@ claude-destktop-zh/
 ├── src/                        # 安装脚本
 │   ├── install.py              # 主安装脚本（Python，Vite 风格交互）
 │   └── install.sh              # macOS / Linux Bash 备用安装脚本
-├── build/                      # 构建脚本
+├── scripts/                    # 脚本工具集
 │   ├── build_exes.py           # 主编译脚本（支持全平台自动检测与单平台指定构建）
-│   └── build.sh                # macOS / Linux 编译脚本（备选）
+│   ├── build.sh                # macOS / Linux 编译脚本（备选）
+│   └── verify_artifacts.py     # 构建产物验证脚本
 ├── .github/                    # GitHub 配置
 │   └── workflows/
 │       ├── build.yml           # GitHub Actions 构建工作流

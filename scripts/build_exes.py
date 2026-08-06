@@ -3,10 +3,10 @@
 编译跨平台可执行文件的脚本
 
 用法:
-    python build_exes.py                  # 尝试编译所有平台（自动检测环境，不匹配则跳过）
-    python build_exes.py windows          # 仅编译 Windows .exe
-    python build_exes.py macos            # 仅编译 macOS 可执行文件（需 Mac）
-    python build_exes.py linux            # 仅编译 Linux 可执行文件（需 Linux）
+    python scripts/build_exes.py                  # 尝试编译所有平台（自动检测环境，不匹配则跳过）
+    python scripts/build_exes.py windows          # 仅编译 Windows .exe
+    python scripts/build_exes.py macos            # 仅编译 macOS 可执行文件（需 Mac）
+    python scripts/build_exes.py linux            # 仅编译 Linux 可执行文件（需 Linux）
 """
 
 import subprocess
@@ -100,11 +100,11 @@ def cleanup_build_artifacts(project_dir: Path) -> None:
     """清理 PyInstaller 打包过程产物"""
     import shutil
 
-    # 1. 清理中间目录 build/build_temp/
-    workpath = project_dir / "build" / "build_temp"
+    # 1. 清理中间目录 scripts/build_temp/
+    workpath = project_dir / "scripts" / "build_temp"
     if workpath.exists():
         shutil.rmtree(workpath)
-        print("  [清理] 已移除中间目录: build/build_temp/")
+        print("  [清理] 已移除中间目录: scripts/build_temp/")
 
     # 2. 清理 .spec 文件
     for spec in project_dir.glob("*.spec"):
@@ -179,8 +179,8 @@ def build_windows(project_dir):
         sys.executable, "-m", "PyInstaller",
         "--clean",
         "--onefile",                    # 单文件
-        "--name", "claude-zh-patch-windows",  # 输出文件名（带平台后缀）
-        "--workpath", str(project_dir / "build" / "build_temp"),  # 中间文件位置
+        "--name", "claude-zh-patch",     # 输出文件名
+        "--workpath", str(project_dir / "scripts" / "build_temp"),  # 中间文件位置
         "--distpath", str(output_dir),   # 输出位置
         "--console",                     # 保留控制台窗口（用于显示进度）
         "--icon", "NONE",               # 无图标（大写 NONE 表示不使用图标）
@@ -198,7 +198,7 @@ def build_windows(project_dir):
         return False
 
     # 检查是否生成成功
-    exe = output_dir / "claude-zh-patch-windows.exe"
+    exe = output_dir / "claude-zh-patch.exe"
     if exe.exists():
         size_mb = exe.stat().st_size / (1024 * 1024)
         print(f"\n[完成] Windows 可执行文件已生成：{exe}")
@@ -233,8 +233,8 @@ def build_macos(project_dir):
         sys.executable, "-m", "PyInstaller",
         "--clean",
         "--onefile",
-        "--name", "claude-zh-patch-macos",     # 带平台后缀
-        "--workpath", str(project_dir / "build" / "build_temp"),
+        "--name", "claude-zh-patch",
+        "--workpath", str(project_dir / "scripts" / "build_temp"),
         "--distpath", str(output_dir),
         "--console",
         "--add-data", f"{project_dir}/resources:resources",
@@ -247,7 +247,7 @@ def build_macos(project_dir):
     if not run_command(cmd):
         return False
 
-    binary = output_dir / "claude-zh-patch-macos"
+    binary = output_dir / "claude-zh-patch"
     if binary.exists():
         chmod_cmd = ["chmod", "+x", str(binary)]
         run_command(chmod_cmd)
@@ -283,8 +283,8 @@ def build_linux(project_dir):
         sys.executable, "-m", "PyInstaller",
         "--clean",
         "--onefile",
-        "--name", "claude-zh-patch-linux",     # 带平台后缀
-        "--workpath", str(project_dir / "build" / "build_temp"),
+        "--name", "claude-zh-patch",
+        "--workpath", str(project_dir / "scripts" / "build_temp"),
         "--distpath", str(output_dir),
         "--console",
         "--add-data", f"{project_dir}/resources:resources",
@@ -297,7 +297,7 @@ def build_linux(project_dir):
     if not run_command(cmd):
         return False
 
-    elf = output_dir / "claude-zh-patch-linux"
+    elf = output_dir / "claude-zh-patch"
     if elf.exists():
         chmod_cmd = ["chmod", "+x", str(elf)]
         run_command(chmod_cmd)
@@ -326,7 +326,7 @@ def print_help():
 Claude-Desktop 汉化程序 - 跨平台编译脚本
 
 用法:
-    python build/build_exes.py [平台]
+    python scripts/build_exes.py [平台]
 
 参数:
     平台    指定目标平台，可选值：
@@ -340,10 +340,10 @@ Claude-Desktop 汉化程序 - 跨平台编译脚本
     -h, --help    显示此帮助信息并退出
 
 示例:
-    python build/build_exes.py                  # 为所有平台构建（自动检测环境）
-    python build/build_exes.py windows          # 仅构建 Windows 版本
-    python build/build_exes.py macos            # 仅构建 macOS 版本
-    python build/build_exes.py linux            # 仅构建 Linux 版本
+    python scripts/build_exes.py                  # 为所有平台构建（自动检测环境）
+    python scripts/build_exes.py windows          # 仅构建 Windows 版本
+    python scripts/build_exes.py macos            # 仅构建 macOS 版本
+    python scripts/build_exes.py linux            # 仅构建 Linux 版本
 
 说明:
     · PyInstaller 不支持交叉编译，必须在目标平台上执行对应平台的构建。

@@ -43,16 +43,16 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
         run: |
-          # 日志写到 build/（已提交的目录），dist/ 在全新 Runner 上不存在
-          python build/build_exes.py ${{ matrix.platform }} 2>&1 | tee build/build.log
+          # 日志写到 scripts/（已提交的目录），dist/ 在全新 Runner 上不存在
+          python scripts/build_exes.py ${{ matrix.platform }} 2>&1 | tee scripts/build.log
 
       - name: 整理产物结构
         shell: bash
         run: |
           # 将日志移入 dist，保持产物整洁
           mkdir -p dist/logs
-          if [ -f build/build.log ]; then
-            cp build/build.log dist/logs/build.log
+          if [ -f scripts/build.log ]; then
+            cp scripts/build.log dist/logs/build.log
           fi
 
       - name: 验证产物

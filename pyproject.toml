@@ -55,10 +55,7 @@ include-package-data = true
 ]
 "share/claude-zh-patch/scripts" = [
   "src/install.ps1",
-  "src/install.sh"
-]
-"share/claude-zh-patch/build" = [
-  "build/build_exes.py",
-  "build/build.sh",
-  "build/run_build.ps1"
+  "src/install.sh",
+  "scripts/build_exes.py",
+  "scripts/build.sh"
 ]

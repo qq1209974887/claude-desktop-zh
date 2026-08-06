@@ -1,15 +1,15 @@
 #!/bin/bash
 # Claude-Desktop 汉化程序 - macOS / Linux 编译脚本
 # 用法：
-#   chmod +x build.sh
-#   ./build.sh
+#   chmod +x scripts/build.sh
+#   ./scripts/build.sh
 
 set -euo pipefail
 
-# 脚本在 build/ 子目录，项目根目录是父目录
+# 脚本在 scripts/ 子目录，项目根目录是父目录
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
-BUILD_DIR="$PROJECT_DIR/build/build_temp"
+BUILD_DIR="$PROJECT_DIR/scripts/build_temp"
 DIST_DIR="$PROJECT_DIR/dist"
 
 echo "=================================================="
