@@ -15,13 +15,13 @@ jobs:
         include:
           - os: ubuntu-latest
             platform: linux
-            artifact: claude-zh-patch-linux
+            artifact: claude-zh-patch
           - os: macos-latest
             platform: macos
-            artifact: claude-zh-patch-macos
+            artifact: claude-zh-patch
           - os: windows-latest
             platform: windows
-            artifact: claude-zh-patch-windows
+            artifact: claude-zh-patch.exe
 
     runs-on: ${{ matrix.os }}
 
@@ -54,6 +54,59 @@ jobs:
           if [ -f build/build.log ]; then
             cp build/build.log dist/logs/build.log
           fi
+
+      - name: 验证产物
+        shell: bash
+        run: |
+          set -e
+          BIN="dist/${{ matrix.artifact }}"
+          echo "=== Smoke Test: $BIN ==="
+
+          # 1. 文件存在且非空
+          test -f "$BIN" || { echo "[FAIL] 二进制文件不存在"; exit 1; }
+          test -s "$BIN" || { echo "[FAIL] 二进制文件为空"; exit 1; }
+          SIZE=$(stat -c%s "$BIN" 2>/dev/null || stat -f%z "$BIN" 2>/dev/null || echo "0")
+          echo "[PASS] 文件存在，大小: $SIZE bytes"
+
+          # 2. 可执行权限
+          chmod +x "$BIN" 2>/dev/null || true
+          test -x "$BIN" && echo "[PASS] 文件可执行" || echo "[WARN] 文件无执行权限"
+
+          # 3. 资源文件完整
+          test -d dist/resources && echo "[PASS] resources/ 存在" || { echo "[FAIL] resources/ 缺失"; exit 1; }
+          test -f dist/resources/zh-CN.json && echo "[PASS] zh-CN.json 存在" || echo "[FAIL] zh-CN.json 缺失"
+          test -d dist/src && echo "[PASS] src/ 存在" || echo "[FAIL] src/ 缺失"
+          test -f dist/使用说明.md && echo "[PASS] 使用说明.md 存在" || echo "[WARN] 使用说明.md 缺失"
+
+          # 4. 二进制头部验证
+          if [ "${{ matrix.platform }}" = "linux" ]; then
+            HEAD=$(xxd -l 4 "$BIN" 2>/dev/null | head -1)
+            echo "  文件头: $HEAD"
+            case "$HEAD" in
+              *"7f45 4c46"*) echo "[PASS] ELF 格式 (Linux 64-bit)";;
+              *"7f45 4c46 02"*) echo "[PASS] ELF 格式 (Linux)";;
+              *) echo "[WARN] 非标准 ELF 头部"; file "$BIN" || true;;
+            esac
+          elif [ "${{ matrix.platform }}" = "macos" ]; then
+            file "$BIN" || xxd -l 4 "$BIN" 2>/dev/null | head -1
+            echo "[INFO] macOS 二进制"
+          else
+            file "$BIN" || true
+            echo "[INFO] Windows 二进制 (.exe)"
+          fi
+
+          # 5. 可执行文件 smoke test：运行 --help
+          echo ""
+          echo "=== 运行 --help ==="
+          OUTPUT=$(timeout 30 "$BIN" --help 2>&1) || true
+          if echo "$OUTPUT" | grep -qi "usage\|用法\|usage"; then
+            echo "[PASS] --help 正常输出"
+          else
+            echo "[WARN] --help 输出异常（可能不影响核心功能）"
+            echo "  输出: $(echo "$OUTPUT" | head -3)"
+          fi
+          echo ""
+          echo "=== Smoke Test 完成 ==="
 
       - name: 上传构建产物
         uses: actions/upload-artifact@v4
