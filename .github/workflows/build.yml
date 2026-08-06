@@ -15,13 +15,13 @@ jobs:
         include:
           - os: ubuntu-latest
             platform: linux
-            artifact: claude-zh-patch
+            artifact: claude-zh-patch-linux
           - os: macos-latest
             platform: macos
-            artifact: claude-zh-patch
+            artifact: claude-zh-patch-macos
           - os: windows-latest
             platform: windows
-            artifact: claude-zh-patch.exe
+            artifact: claude-zh-patch-windows
 
     runs-on: ${{ matrix.os }}
 

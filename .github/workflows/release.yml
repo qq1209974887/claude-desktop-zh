@@ -47,8 +47,9 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            release/**/claude-zh-patch.exe
-            release/**/claude-zh-patch
+            release/**/claude-zh-patch-windows.exe
+            release/**/claude-zh-patch-macos
+            release/**/claude-zh-patch-linux
             release/**/使用说明.md
             release/**/src/**
             release/**/resources/**

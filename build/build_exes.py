@@ -179,7 +179,7 @@ def build_windows(project_dir):
         sys.executable, "-m", "PyInstaller",
         "--clean",
         "--onefile",                    # 单文件
-        "--name", "claude-zh-patch",     # 输出文件名
+        "--name", "claude-zh-patch-windows",  # 输出文件名（带平台后缀）
         "--workpath", str(project_dir / "build" / "build_temp"),  # 中间文件位置
         "--distpath", str(output_dir),   # 输出位置
         "--console",                     # 保留控制台窗口（用于显示进度）
@@ -198,7 +198,7 @@ def build_windows(project_dir):
         return False
 
     # 检查是否生成成功
-    exe = output_dir / "claude-zh-patch.exe"
+    exe = output_dir / "claude-zh-patch-windows.exe"
     if exe.exists():
         size_mb = exe.stat().st_size / (1024 * 1024)
         print(f"\n[完成] Windows 可执行文件已生成：{exe}")
@@ -233,7 +233,7 @@ def build_macos(project_dir):
         sys.executable, "-m", "PyInstaller",
         "--clean",
         "--onefile",
-        "--name", "claude-zh-patch",
+        "--name", "claude-zh-patch-macos",     # 带平台后缀
         "--workpath", str(project_dir / "build" / "build_temp"),
         "--distpath", str(output_dir),
         "--console",
@@ -247,7 +247,7 @@ def build_macos(project_dir):
     if not run_command(cmd):
         return False
 
-    binary = output_dir / "claude-zh-patch"
+    binary = output_dir / "claude-zh-patch-macos"
     if binary.exists():
         chmod_cmd = ["chmod", "+x", str(binary)]
         run_command(chmod_cmd)
@@ -283,7 +283,7 @@ def build_linux(project_dir):
         sys.executable, "-m", "PyInstaller",
         "--clean",
         "--onefile",
-        "--name", "claude-zh-patch",
+        "--name", "claude-zh-patch-linux",     # 带平台后缀
         "--workpath", str(project_dir / "build" / "build_temp"),
         "--distpath", str(output_dir),
         "--console",
@@ -297,7 +297,7 @@ def build_linux(project_dir):
     if not run_command(cmd):
         return False
 
-    elf = output_dir / "claude-zh-patch"
+    elf = output_dir / "claude-zh-patch-linux"
     if elf.exists():
         chmod_cmd = ["chmod", "+x", str(elf)]
         run_command(chmod_cmd)
