@@ -113,6 +113,41 @@ jobs:
           echo ""
           echo "=== Smoke Test 完成 ==="
 
+      - name: 显式设置文件权限（确保下载后可直接执行）
+        shell: bash
+        run: |
+          echo "=== 设置产物权限 ==="
+          BIN="dist/${{ matrix.artifact }}"
+
+          # 1. 二进制：0755（可执行）
+          if [ -f "$BIN" ]; then
+            chmod 755 "$BIN"
+            echo "[PASS] $BIN 权限: $(stat -c '%a' "$BIN" 2>/dev/null || stat -f '%OLp' "$BIN")"
+          fi
+
+          # 2. 命令行安装脚本
+          if [ -f dist/src/install.sh ]; then
+            chmod 755 dist/src/install.sh
+            echo "[PASS] dist/src/install.sh 权限: $(stat -c '%a' dist/src/install.sh 2>/dev/null || stat -f '%OLp' dist/src/install.sh)"
+          fi
+          if [ -f dist/src/install.ps1 ]; then
+            chmod 755 dist/src/install.ps1 2>/dev/null || true
+            echo "[PASS] dist/src/install.ps1 权限已设置"
+          fi
+          if [ -f dist/src/install.py ]; then
+            chmod 755 dist/src/install.py 2>/dev/null || true
+            echo "[PASS] dist/src/install.py 权限已设置"
+          fi
+
+          # 3. 目录遍历权限
+          find dist/ -type d -exec chmod 755 {} \; 2>/dev/null || true
+          # 4. 普通文件可读
+          find dist/ -type f -not -executable -exec chmod 644 {} \; 2>/dev/null || true
+
+          echo ""
+          echo "=== 最终权限快照 ==="
+          ls -la dist/
+
       - name: 上传构建产物
         uses: actions/upload-artifact@v4
         with:

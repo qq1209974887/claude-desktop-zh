@@ -31,7 +31,30 @@ jobs:
             mkdir -p "release/$name"
             # 直接复制产物内容（现在 artifact 下载下来就是扁平化的 dist 内容）
             cp -r "$dir"* "release/$name/" 2>/dev/null || true
+
+            # 根据目录名判断平台，确保二进制文件有执行权限
+            if [[ "$name" == *"linux"* ]] || [[ "$name" == *"macos"* ]]; then
+              # 平台二进制：无 .exe 后缀
+              for bin_file in "release/$name/claude-zh-patch"; do
+                if [ -f "$bin_file" ]; then
+                  chmod 755 "$bin_file"
+                  echo "[PASS] 设置执行权限: $bin_file"
+                fi
+              done
+              # 安装脚本
+              for script in "release/$name/src/install.sh" "release/$name/src/install.py"; do
+                if [ -f "$script" ]; then
+                  chmod 755 "$script"
+                  echo "[PASS] 设置执行权限: $script"
+                fi
+              done
+            fi
           done
+
+          # 所有目录：遍历权限
+          find release/ -type d -exec chmod 755 {} \;
+          # 所有非可执行普通文件：可读
+          find release/ -type f -not -executable -exec chmod 644 {} \;
 
           # 列出产物
           echo "=== 发布产物列表 ==="
