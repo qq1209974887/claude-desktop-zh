@@ -46,11 +46,18 @@ jobs:
           # 日志写到 build/（已提交的目录），dist/ 在全新 Runner 上不存在
           python build/build_exes.py ${{ matrix.platform }} 2>&1 | tee build/build.log
 
+      - name: 整理产物结构
+        shell: bash
+        run: |
+          # 将日志移入 dist，保持产物整洁
+          mkdir -p dist/logs
+          if [ -f build/build.log ]; then
+            cp build/build.log dist/logs/build.log
+          fi
+
       - name: 上传构建产物
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact }}-${{ matrix.platform }}
-          path: |
-            dist/
-            build/build.log
+          path: dist/
           retention-days: 30
